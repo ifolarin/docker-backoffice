@@ -1,5 +1,6 @@
 .DS_Store
-# config
+config/log
+config/letsencrypt
 *.zip
 docker-mmc-mail-stable/
 docker-openldap-stable/
