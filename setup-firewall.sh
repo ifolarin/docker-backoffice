@@ -25,3 +25,5 @@ echo -e "done."
 echo -e "587..."
 ufw allow 587
 echo -e "done."
+
+ufw status verbose
