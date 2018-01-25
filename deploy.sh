@@ -30,39 +30,9 @@ docker tag  webbasedsol/s3-cron-backup:0.1.0 webbasedsol/s3-cron-backup:latest
 cd -
 
 
-#Enable firewall
-echo -e "Enabling ufw firewall..."
-ufw enable
-
-#Allowing port traffic
-echo -e "Enabling ports..."
-
-echo -e "ssh..."
-ufw allow ssh
-echo -e "done."
- 
-echo -e "http..."
-ufw allow http
-echo -e "done."
-
-echo -e "https..."
-ufw allow https
-echo -e "done."
-
-echo -e "143..."
-ufw allow 143
-echo -e "done."
-
-echo -e "587..."
-ufw allow 587
-echo -e "done."
-
-
 #Clone and build backoffice application
 mkdir -p config/letsencrypt/log
 mkdir -p config/letsencrypt/etc
-./setup-cert.sh
-
-#cd config/letsencrypt
-#docker run --rm -ti -v $PWD/log/:/var/log/letsencrypt -v $PWD/etc/:/etc/letsencrypt/ -p 443:443 haocen/certbot:latest certonly --standalone -d mail.example.org
-#cd - 
+cd config/letsencrypt
+docker run --rm -ti -v $PWD/log/:/var/log/letsencrypt -v $PWD/etc/:/etc/letsencrypt/ -p 443:443 haocen/certbot:latest certonly --standalone -d mail.example.org -d example.org -d www.example.org -d lssp.example.org -d ldap.example.org
+cd - 
