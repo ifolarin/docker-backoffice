@@ -14,7 +14,7 @@ GetCert(){
 }
 
 echo "Getting certificates..."
-GetCert -d example.org -d www.example.org -d lssp.example.org -d ldap.example.org
+GetCert -d example.org -d www.example.org -d lssp.example.org -d ldap.example.org -d mail.example.org
 
 
 
