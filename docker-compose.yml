@@ -179,8 +179,8 @@ services:
   s3-backup:
     image: peterrus/s3-cron-backup
     environment:
-      - AWS_ACCESS_KEY_ID=AKIAICKHFGYSOBEHRD5Q
-      - AWS_SECRET_ACCESS_KEY=tw0hLme7kb2tnrjJslxNfL4SJHkkRthwyBLM0UbH
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
       - S3_BUCKET_URL=s3://wbs.example.org/
       - AWS_DEFAULT_REGION=us-east-1
       - CRON_SCHEDULE=0 4 * * * # run every hour
@@ -198,8 +198,8 @@ services:
     #      - BACKUP_MANAGER_CRON_EXP="0/5 * * * *"
     #      - BACKUP_MANAGER_UPLOAD_METHOD=s3
     #      - BM_UPLOAD_S3_DESTINATION="wbs.example.org"
-    #      - BM_UPLOAD_S3_ACCESS_KEY=AKIAICKHFGYSOBEHRD5Q
-    #      - BM_UPLOAD_S3_SECRET_KEY=tw0hLme7kb2tnrjJslxNfL4SJHkkRthwyBLM0UbH
+    #      - BM_UPLOAD_S3_ACCESS_KEY=
+    #      - BM_UPLOAD_S3_SECRET_KEY=
     #    volumes:
     #      - backup-data:/data/backup
     #      - ldap-backup:/data/backup/ldap
