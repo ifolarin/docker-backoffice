@@ -7,7 +7,7 @@ GetCert(){
 								-ti \
 								-v $PWD/log/:/var/log/letsencrypt \
 								-v $PWD/etc/:/etc/letsencrypt/ \
-								-p 443:443 
+								-p 443:443 \
 								haocen/certbot:latest certonly --standalone \
 								$@
 }
