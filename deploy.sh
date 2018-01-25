@@ -29,10 +29,3 @@ docker build -t webbasedsol/s3-cron-backup:0.1.0
 docker tag  webbasedsol/s3-cron-backup:0.1.0 webbasedsol/s3-cron-backup:latest
 cd -
 
-
-#Clone and build backoffice application
-mkdir -p config/letsencrypt/log
-mkdir -p config/letsencrypt/etc
-cd config/letsencrypt
-docker run --rm -ti -v $PWD/log/:/var/log/letsencrypt -v $PWD/etc/:/etc/letsencrypt/ -p 443:443 haocen/certbot:latest certonly --standalone -d mail.example.org -d example.org -d www.example.org -d lssp.example.org -d ldap.example.org
-cd - 
