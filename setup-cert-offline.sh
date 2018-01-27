@@ -3,13 +3,14 @@
 #docker pull haocen/certbot
 
 GetCert(){
-				docker run --rm \
-								-ti \
-								-v $PWD/log/:/var/log/letsencrypt \
-								-v $PWD/etc/:/etc/letsencrypt/ \
-								-p 443:443 \
-								haocen/certbot:latest certonly --standalone \
-								$@
+  docker run --rm \
+  -ti \
+  -v $PWD/log/:/var/log/letsencrypt \
+  -v $PWD/etc/:/etc/letsencrypt/ \
+  -p 443:443 \
+  -p 80:80 \
+  haocen/certbot:latest certonly --standalone \
+  $@
 }
 
 mkdir -p config/letsencrypt/log
