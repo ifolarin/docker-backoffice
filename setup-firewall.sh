@@ -22,6 +22,14 @@ echo -e "143..."
 ufw allow 143
 echo -e "done."
 
+echo -e “993…”
+ufw allow 993
+echo -e "done."
+
+echo -e “4190…”
+ufw allow 4190
+echo -e "done."
+
 echo -e "587..."
 ufw allow 587
 echo -e "done."

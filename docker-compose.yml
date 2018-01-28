@@ -25,6 +25,7 @@ services:
     - "143:143"
     - "587:587"
     - "993:993"
+    - “4190:4190” #Sieve
     depends_on:
       - openldap
     volumes:
@@ -40,7 +41,7 @@ services:
     - ONE_DIR=1
     - DMS_DEBUG=1
     #- ENABLE_POP3=1
-    #- ENABLE_MANAGESIEVE=1
+    - ENABLE_MANAGESIEVE=1
     - ENABLE_FETCHMAIL=0
     - ENABLE_LDAP=1
     - LDAP_SERVER_HOST=openldap
