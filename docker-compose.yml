@@ -12,94 +12,106 @@ services:
     links:
     - webmail
     - phpldapadmin:ldapadmin
-
   mail:
-    image: tvial/docker-mailserver:2.1
-    hostname: mail
-    domainname: example.org
-    #links:
-    #  - elk
-    #container_name: mail
+    image: tvial/docker-mailserver:latest
+    hostname: ${HOSTNAME}
+    domainname: ${DOMAINNAME}
+    container_name: ${CONTAINER_NAME}
     ports:
     - "25:25"
     - "143:143"
     - "587:587"
     - "993:993"
-    - “4190:4190” #Sieve
     depends_on:
-      - openldap
+    - ldap
     volumes:
     - maildata:/var/mail
     - mailstate:/var/mail-state
     - ./config/:/tmp/docker-mailserver/
     - ./config/letsencrypt/etc:/etc/letsencrypt
     environment:
-    - ENABLE_SPAMASSASSIN=1
-    - ENABLE_CLAMAV=1
-    - ENABLE_FAIL2BAN=1
-      #- ENABLE_ELK_FORWARDER=1
-    - ONE_DIR=1
-    - DMS_DEBUG=1
-    #- ENABLE_POP3=1
-    - ENABLE_MANAGESIEVE=1
-    - ENABLE_FETCHMAIL=0
-    - ENABLE_LDAP=1
-    - LDAP_SERVER_HOST=openldap
-    - LDAP_SEARCH_BASE=ou=people,dc=example,dc=org
-    - LDAP_BIND_DN=cn=admin,dc=example,dc=org
-    - LDAP_BIND_PW=admin
-      #- OVERRIDE_HOSTNAME=
-      #- POSTMASTER_ADDRESS=
-      #- ENABLE_POSTGREY=1
-      #- POSTGREY_DELAY=300 #greylist for N seconds
-      #- POSTGREY_MAX_AGE=35 #delete entries older than N days since the last time they have been see
-      #- POSTGREY_TEXT=Dealyed by postgrey
-    - ENABLE_SASLAUTHD=0
-      #- ENABLE_SASLAUTHD=1
-    - SASLAUTHD_MECHANISMS=ldap
-    - SASLAUTHD_MECH_OPTIONS=mail.example.org
-    - SASLAUTHD_LDAP_SERVER=openldap
-    - SASLAUTHD_LDAP_SSL=0
-    - SASLAUTHD_LDAP_BIND_DN=cn=admin,dc=example,dc=org
-    - SASLAUTHD_LDAP_PASSWORD=admin
-    - SASLAUTHD_LDAP_SEARCH_BASE=ou=people,dc=example,dc=org
-      #- SASLAUTHD_LDAP_FILTER=(&(uid=%u)(mailEnabled=TRUE))
-    - SASLAUTHD_LDAP_FILTER=(&(mail=%s)(mailEnabled=TRUE))
-    - SSL_TYPE=letsencrypt
-      #- PERMIT_DOCKER=
-      #- VIRUSMAILS_DELETE_DELAY=7 #Mumber of days before virus mail is deleted from server
+    - DMS_DEBUG=${DMS_DEBUG}
+    - ENABLE_CLAMAV=${ENABLE_CLAMAV}
+    - ONE_DIR=${ONE_DIR}
+    - ENABLE_POP3=${ENABLE_POP3}
+    - ENABLE_FAIL2BAN=${ENABLE_FAIL2BAN}
+    - ENABLE_MANAGESIEVE=${ENABLE_MANAGESIEVE}
+    - OVERRIDE_HOSTNAME=${OVERRIDE_HOSTNAME}
+    - POSTMASTER_ADDRESS=${POSTMASTER_ADDRESS}
+    - POSTSCREEN_ACTION=${POSTSCREEN_ACTION}
+    - SMTP_ONLY=${SMTP_ONLY}
+    - SSL_TYPE=${SSL_TYPE}
+    - PERMIT_DOCKER=${PERMIT_DOCKER}
+    - VIRUSMAILS_DELETE_DELAY=${VIRUSMAILS_DELETE_DELAY}
+    - ENABLE_POSTFIX_VIRTUAL_TRANSPORT=${ENABLE_POSTFIX_VIRTUAL_TRANSPORT}
+    - POSTFIX_DAGENT=${POSTFIX_DAGENT}
+    - ENABLE_SPAMASSASSIN=${ENABLE_SPAMASSASSIN}
+    - SA_TAG=${SA_TAG}
+    - SA_TAG2=${SA_TAG2}
+    - SA_KILL=${SA_KILL}
+    - SA_SPAM_SUBJECT=${SA_SPAM_SUBJECT}
+    - ENABLE_FETCHMAIL=${ENABLE_FETCHMAIL}
+    - FETCHMAIL_POLL=${FETCHMAIL_POLL}
+    - ENABLE_LDAP=${ENABLE_LDAP}
+    - LDAP_START_TLS=${LDAP_START_TLS}
+    - LDAP_SERVER_HOST=${LDAP_SERVER_HOST}
+    - LDAP_SEARCH_BASE=${LDAP_SEARCH_BASE}
+    - LDAP_BIND_DN=${LDAP_BIND_DN}
+    - LDAP_BIND_PW=${LDAP_BIND_PW}
+    - LDAP_QUERY_FILTER_USER=${LDAP_QUERY_FILTER_USER}
+    - LDAP_QUERY_FILTER_GROUP=${LDAP_QUERY_FILTER_GROUP}
+    - LDAP_QUERY_FILTER_ALIAS=${LDAP_QUERY_FILTER_ALIAS}
+    - DOVECOT_TLS=${DOVECOT_TLS}
+    - DOVECOT_USER_FILTER=${DOVECOT_USER_FILTER}
+    - DOVECOT_PASS_FILTER=${DOVECOT_PASS_FILTER}
+    - ENABLE_POSTGREY=${ENABLE_POSTGREY}
+    - POSTGREY_DELAY=${POSTGREY_DELAY}
+    - POSTGREY_MAX_AGE=${POSTGREY_MAX_AGE}
+    - POSTGREY_TEXT=${POSTGREY_TEXT}
+    - ENABLE_SASLAUTHD=${ENABLE_SASLAUTHD}
+    - SASLAUTHD_MECHANISMS=${SASLAUTHD_MECHANISMS}
+    - SASLAUTHD_MECH_OPTIONS=${SASLAUTHD_MECH_OPTIONS}
+    - SASLAUTHD_LDAP_SERVER=${SASLAUTHD_LDAP_SERVER}
+    - SASLAUTHD_LDAP_SSL=${SASLAUTHD_LDAP_SSL}
+    - SASLAUTHD_LDAP_BIND_DN=${SASLAUTHD_LDAP_BIND_DN}
+    - SASLAUTHD_LDAP_PASSWORD=${SASLAUTHD_LDAP_PASSWORD}
+    - SASLAUTHD_LDAP_SEARCH_BASE=${SASLAUTHD_LDAP_SEARCH_BASE}
+    - SASLAUTHD_LDAP_FILTER=${SASLAUTHD_LDAP_FILTER}
+    - SASL_PASSWD=${SASL_PASSWD}
+    cap_add:
+    - NET_ADMIN
+    - SYS_PTRACE
     restart: always 
 
-  openldap:
+  ldap:
     image: webbasedsol/openldap
     hostname: "ldap"
-    #container_name: openldap
+    container_name: ldap
     environment:
       LDAP_LOG_LEVEL: "256"
-      LDAP_ORGANISATION: "Example Inc."
-      LDAP_DOMAIN: "example.org"
-      LDAP_BASE_DN: ""
-      LDAP_ADMIN_PASSWORD: "admin"
-      LDAP_CONFIG_PASSWORD: "config"
-      LDAP_READONLY_USER: "false"
-      #LDAP_READONLY_USER_USERNAME: "readonly"
-      #LDAP_READONLY_USER_PASSWORD: "readonly"
-      LDAP_BACKEND: "hdb"
-      #LDAP_TLS: "true"
-      LDAP_TLS: "false"
-      LDAP_TLS_CRT_FILENAME: "ldap.crt"
-      LDAP_TLS_KEY_FILENAME: "ldap.key"
-      LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
-      LDAP_TLS_ENFORCE: "false"
-      LDAP_TLS_CIPHER_SUITE: "SECURE256:-VERS-SSL3.0"
-      LDAP_TLS_PROTOCOL_MIN: "3.1"
-      LDAP_TLS_VERIFY_CLIENT: "demand"
-      LDAP_REPLICATION: "false"
-      #LDAP_REPLICATION_CONFIG_SYNCPROV: "binddn="cn=admin,cn=config" bindmethod=simple credentials=$LDAP_CONFIG_PASSWORD searchbase="cn=config" type=refreshAndPersist retry="60 +" timeout=1 starttls=critical"
-      #LDAP_REPLICATION_DB_SYNCPROV: "binddn="cn=admin,$LDAP_BASE_DN" bindmethod=simple credentials=$LDAP_ADMIN_PASSWORD searchbase="$LDAP_BASE_DN" type=refreshAndPersist interval=00:00:00:10 retry="60 +" timeout=1 starttls=critical"
-      #LDAP_REPLICATION_HOSTS: "#PYTHON2BASH:['ldap://ldap.example.org','ldap://ldap2.example.org']"
-      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
-      LDAP_SSL_HELPER_PREFIX: "ldap"
+      LDAP_ORGANISATION: ${LDAP_ORGANISATION}
+      LDAP_DOMAIN: ${DOMAINNAME}
+      LDAP_BASE_DN: ${LDAP_BASE_DN}
+      LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD}
+      LDAP_CONFIG_PASSWORD: ${LDAP_CONFIG_PASSWORD}
+      LDAP_READONLY_USER: ${LDAP_READONLY_USER}
+      LDAP_READONLY_USER_USERNAME: ${LDAP_READONLY_USER_USERNAME}
+      LDAP_READONLY_USER_PASSWORD: ${LDAP_READONLY_USER_PASSWORD}
+      LDAP_BACKEND: ${LDAP_BACKEND}
+      LDAP_TLS: ${LDAP_TLS}
+      LDAP_TLS_CRT_FILENAME: ${LDAP_TLS_CRT_FILENAME}
+      LDAP_TLS_KEY_FILENAME: ${LDAP_TLS_KEY_FILENAME}
+      LDAP_TLS_CA_CRT_FILENAME: ${LDAP_TLS_CA_CRT_FILENAME}
+      LDAP_TLS_ENFORCE: ${LDAP_TLS_ENFORCE}
+      LDAP_TLS_CIPHER_SUITE: ${LDAP_TLS_CIPHER_SUITE}
+      LDAP_TLS_PROTOCOL_MIN: ${LDAP_PROTOCOL_MIN}
+      LDAP_TLS_VERIFY_CLIENT: ${LDAP_TLS_VERIFY_CLIENT}
+      LDAP_REPLICATION: ${LDAP_REPLICATION}
+      LDAP_REPLICATION_CONFIG_SYNCPROV: ${LDAP_REPLICATION_CONFIG_SYNCPROV}
+      LDAP_REPLICATION_DB_SYNCPROV: ${LDAP_REPLICATION_DB_SYNCPROV}
+      LDAP_REPLICATION_HOSTS: ${LDAP_REPLICATION_HOSTS}
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: ${LDAP_REMOVE_CONFIG_AFTER_SETUP}
+      LDAP_SSL_HELPER_PREFIX: ${LDAP_SSL_HELPER_PREFIX}
     tty: true
     stdin_open: true
     volumes:
@@ -123,13 +135,13 @@ services:
     image: webbasedsol/rainloop:0.2.0
     mem_limit: 256m
     links:
-      - mail:mail.example.org
+      - mail:mail.${DOMAINNAME}
     depends_on:
       - mail
     #ports: 
             #  - 8090:80
     environment: 
-      - APACHE_SERVER_NAME=webmail.example.org
+      - APACHE_SERVER_NAME=webmail.${DOMAINNAME}
       - PHP_MAX_POST_SIZE=105M
       - PHP_MAX_UPLOAD_SIZE=100M
 
@@ -138,21 +150,21 @@ services:
     #image: webbasedsol/phpldapadmin:0.1.0
     #container_name: phpldapadmin
     environment:
-      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+      PHPLDAPADMIN_LDAP_HOSTS: "ldap"
       PHPLDAPADMIN_HTTPS: "false"
     #ports:
             #      - "8080:80"
     depends_on:
-      - openldap
+      - ldap
 
   lssp:
     image: dtwardow/ldap-self-service-password
-    #container_name: openldap
+    #container_name: ldap
     hostname: lssp
     #ports:
             # - "8000:80"
     links: 
-      - openldap:ldap-host
+      - ldap:ldap-host
       #  - mail:mail
     environment:
       #LDAP Self-Service-Password variables
@@ -160,17 +172,17 @@ services:
       LSSP_ATTR_FN: cn
       LSSP_ATTR_MAIL: mail
       LSSP_ATTR_ACTION: change
-      #OpenLDAP-Server variables 
+      #ldap-Server variables 
       LDAP_BASE: dc=example,dc=org
       LDAP_HOST: ldap-host
       LDAP_PORT: 389 #Default
       LDAP_USER: cn=admin,dc=example,dc=org
       LDAP_PASS: admin
 
-  openldap-backup:
-    image: osixia/openldap-backup:1.1.8
+  ldap-backup:
+    image: osixia/ldap-backup:1.1.8
     links:
-      - openldap
+      - ldap
     environment:
       - LDAP_BACKUP_CONFIG_CRON_EXP=30 3 * * *
       - LDAP_BACKUP_DATA_CRON_EXP=30 3 * * * *
