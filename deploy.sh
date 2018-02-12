@@ -4,8 +4,9 @@
 #Clone and build openldap
 git clone https://github.com/ifolarin/docker-openldap.git
 cd docker-openldap/example/extend-osixia-openldap/
-docker build -t webbasedsol/openldap:0.3.4 .
-docker tag  webbasedsol/openldap:0.3.4 webbasedsol/openldap:latest
+#docker build -t webbasedsol/openldap:0.3.4 .
+#docker tag  webbasedsol/openldap:0.3.4 webbasedsol/openldap:latest
+make tag_latest
 cd -
 
 #Clone and build phpLDAPadmin
