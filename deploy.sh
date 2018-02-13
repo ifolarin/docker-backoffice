@@ -12,15 +12,17 @@ cd -
 #Clone and build phpLDAPadmin
 git clone https://github.com/ifolarin/docker-phpLDAPadmin.git
 cd docker-phpLDAPadmin/example/extend-dinkel-phpldapadmin/
-docker build -t webbasedsol/phpldapadmin:0.1.2 . 
-docker tag  webbasedsol/phpldapadmin:0.1.2 webbasedsol/phpldapadmin:latest
+#docker build -t webbasedsol/phpldapadmin:0.1.2 . 
+#docker tag  webbasedsol/phpldapadmin:0.1.2 webbasedsol/phpldapadmin:latest
+make tag_latest
 cd -
 
 #Clone and build rainloop
 git clone https://github.com/ifolarin/docker-rainloop.git
 cd docker-rainloop/extend-runningman84-rainloop/
-docker build -t webbasedsol/rainloop:0.2.0 .
-docker tag  webbasedsol/rainloop:0.2.0 webbasedsol/rainloop:latest
+#docker build -t webbasedsol/rainloop:0.2.0 .
+#docker tag  webbasedsol/rainloop:0.2.0 webbasedsol/rainloop:latest
+make tag_latest
 cd -
 
 #Clone and build s3-backup
