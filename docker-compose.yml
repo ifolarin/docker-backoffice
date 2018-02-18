@@ -1,17 +1,17 @@
 version: '2'
 services:
-  webproxy:
-    image: nginx
-    ports:
-    - "80:80"
-    - "443:443"
-    volumes:
-    - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    - ./config/letsencrypt/www:/var/www/letsencrypt
-    - ./config/letsencrypt/etc:/etc/letsencrypt
-    links:
-    - webmail
-    - phpldapadmin:ldapadmin
+  #  webproxy:
+  #    image: nginx
+  #    ports:
+  #    - "80:80"
+  #    - "443:443"
+  #    volumes:
+  #    - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #    - ./config/letsencrypt/www:/var/www/letsencrypt
+  #    - ./config/letsencrypt/etc:/etc/letsencrypt
+  #    links:
+  #    - webmail
+  #    - phpldapadmin:ldapadmin
   mail:
     image: tvial/docker-mailserver:latest
     hostname: ${HOSTNAME}
@@ -88,7 +88,7 @@ services:
     hostname: "ldap"
     container_name: ldap
     environment:
-      LDAP_LOG_LEVEL: "256"
+      LDAP_LOG_LEVEL: ${LDAP_LOG_LEVEL}
       LDAP_ORGANISATION: ${LDAP_ORGANISATION}
       LDAP_DOMAIN: ${DOMAINNAME}
       LDAP_BASE_DN: ${LDAP_BASE_DN}
@@ -104,7 +104,7 @@ services:
       LDAP_TLS_CA_CRT_FILENAME: ${LDAP_TLS_CA_CRT_FILENAME}
       LDAP_TLS_ENFORCE: ${LDAP_TLS_ENFORCE}
       LDAP_TLS_CIPHER_SUITE: ${LDAP_TLS_CIPHER_SUITE}
-      LDAP_TLS_PROTOCOL_MIN: ${LDAP_PROTOCOL_MIN}
+      LDAP_TLS_PROTOCOL_MIN: ${LDAP_TLS_PROTOCOL_MIN}
       LDAP_TLS_VERIFY_CLIENT: ${LDAP_TLS_VERIFY_CLIENT}
       LDAP_REPLICATION: ${LDAP_REPLICATION}
       LDAP_REPLICATION_CONFIG_SYNCPROV: ${LDAP_REPLICATION_CONFIG_SYNCPROV}
@@ -144,14 +144,22 @@ services:
       - APACHE_SERVER_NAME=webmail.${DOMAINNAME}
       - PHP_MAX_POST_SIZE=105M
       - PHP_MAX_UPLOAD_SIZE=100M
+      - VIRTUAL_HOST=mail.${DOMAIN_NAME}
+      - VIRTUAL_PROTO=https
+      - LETSENCRYPT_HOST=ldap.${DOMAIN_NAME}
+      - LETSENCRYPT_EMAI=${WEBMASTER_EMAIL}
 
   phpldapadmin:
-    image: webbasedsol/phpldapadmin
+    image: webbasedsol/phpldapadmin:latest
     #image: webbasedsol/phpldapadmin:0.1.0
     #container_name: phpldapadmin
     environment:
-      PHPLDAPADMIN_LDAP_HOSTS: "ldap"
-      PHPLDAPADMIN_HTTPS: "false"
+      PHPLDAPADMIN_LDAP_HOSTS: ${PHPLDAPADMIN_LDAP_HOSTS:-ldap}
+      PHPLDAPADMIN_HTTPS: ${PHPLDAPADMIN_HTTPS:-false}
+      VIRTUAL_HOST: ldap.${DOMAIN_NAME}
+      VIRTUAL_PROTO: https
+      LETSENCRYPT_HOST: ldap.${DOMAIN_NAME}
+      LETSENCRYPT_EMAIL: ${WEBMASTER_EMAIL}
     #ports:
             #      - "8080:80"
     depends_on:
@@ -180,7 +188,7 @@ services:
       LDAP_PASS: admin
 
   ldap-backup:
-    image: osixia/ldap-backup:1.1.8
+    image: osixia/openldap-backup:1.1.11
     links:
       - ldap
     environment:
@@ -228,3 +236,8 @@ volumes:
     driver: local
   ldap-backup:
     driver: local
+
+networks:
+  default:
+    external:
+      name: web-proxy
