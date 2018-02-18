@@ -10,7 +10,7 @@ cd -
 
 #Clone and build phpLDAPadmin
 git clone https://github.com/ifolarin/docker-phpLDAPadmin.git
-cd docker-phpLDAPadmin/example/extend-osixia-phpLDAPadmin/
+cd docker-phpLDAPadmin/example/extend-dinkel-phpldapadmin/
 docker build -t webbasedsol/phpldapadmin:0.1.3 . 
 docker tag  webbasedsol/phpldapadmin:0.1.3 webbasedsol/phpldapadmin:latest
 cd -
