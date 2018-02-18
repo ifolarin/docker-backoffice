@@ -144,9 +144,9 @@ services:
       - APACHE_SERVER_NAME=webmail.${DOMAINNAME}
       - PHP_MAX_POST_SIZE=105M
       - PHP_MAX_UPLOAD_SIZE=100M
-      - VIRTUAL_HOST=mail.${DOMAIN_NAME}
+      - VIRTUAL_HOST=mail.${DOMAINNAME}
       - VIRTUAL_PROTO=https
-      - LETSENCRYPT_HOST=ldap.${DOMAIN_NAME}
+      - LETSENCRYPT_HOST=ldap.${DOMAINNAME}
       - LETSENCRYPT_EMAI=${WEBMASTER_EMAIL}
 
   phpldapadmin:
@@ -155,7 +155,7 @@ services:
     #container_name: phpldapadmin
     environment:
       PHPLDAPADMIN_LDAP_HOSTS: ${PHPLDAPADMIN_LDAP_HOSTS:-ldap}
-      PHPLDAPADMIN_HTTPS: ${PHPLDAPADMIN_HTTPS:-false}
+      PHPLDAPADMIN_HTTPS: false
       VIRTUAL_HOST: ldap.${DOMAIN_NAME}
       VIRTUAL_PROTO: https
       LETSENCRYPT_HOST: ldap.${DOMAIN_NAME}
