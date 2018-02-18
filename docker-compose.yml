@@ -156,9 +156,9 @@ services:
     environment:
       PHPLDAPADMIN_LDAP_HOSTS: "ldap"
       PHPLDAPADMIN_HTTPS: "false"
-      VIRTUAL_HOST: ldap.${DOMAIN_NAME}
+      VIRTUAL_HOST: ldap.${DOMAINNAME}
       VIRTUAL_PROTO: https
-      LETSENCRYPT_HOST: ldap.${DOMAIN_NAME}
+      LETSENCRYPT_HOST: ldap.${DOMAINNAME}
       LETSENCRYPT_EMAIL: ${WEBMASTER_EMAIL}
     #ports:
             #      - "8080:80"
