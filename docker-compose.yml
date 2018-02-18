@@ -158,7 +158,7 @@ services:
       #      PHPLDAPADMIN_HTTPS: "false"
       LDAP_SERVER_HOST: ldap
       VIRTUAL_HOST: ldap.${DOMAINNAME}
-      VIRTUAL_PROTO: https
+      VIRTUAL_PROTO: http
       LETSENCRYPT_HOST: ldap.${DOMAINNAME}
       LETSENCRYPT_EMAIL: ${WEBMASTER_EMAIL}
     #ports:
