@@ -146,7 +146,7 @@ services:
       - PHP_MAX_UPLOAD_SIZE=100M
       - VIRTUAL_HOST=mail.${DOMAINNAME}
       - VIRTUAL_PROTO=https
-      - LETSENCRYPT_HOST=ldap.${DOMAINNAME}
+      - LETSENCRYPT_HOST=mail.${DOMAINNAME}
       - LETSENCRYPT_EMAI=${WEBMASTER_EMAIL}
 
   phpldapadmin:
