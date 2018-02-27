@@ -16,10 +16,10 @@ docker tag  webbasedsol/phpldapadmin:0.1.3 webbasedsol/phpldapadmin:latest
 cd -
 
 #Clone and build rainloop
-git clone https://github.com/ifolarin/docker-rainloop.git
-cd docker-rainloop/extend-runningman84-rainloop/
-docker build -t webbasedsol/rainloop:0.2.0 .
-docker tag  webbasedsol/rainloop:0.2.0 webbasedsol/rainloop:latest
+git clone https://github.com/ifolarin/docker-rainloop-1.git
+cd docker-rainloop-1/
+docker build -t webbasedsol/rainloop:0.3.0 .
+docker tag  webbasedsol/rainloop:0.3.0 webbasedsol/rainloop:latest
 cd -
 
 #Clone and build s3-backup

@@ -1,17 +1,5 @@
 version: '2'
 services:
-  #  webproxy:
-  #    image: nginx
-  #    ports:
-  #    - "80:80"
-  #    - "443:443"
-  #    volumes:
-  #    - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-  #    - ./config/letsencrypt/www:/var/www/letsencrypt
-  #    - ./config/letsencrypt/etc:/etc/letsencrypt
-  #    links:
-  #    - webmail
-  #    - phpldapadmin:ldapadmin
   mail:
     image: tvial/docker-mailserver:latest
     hostname: ${HOSTNAME}
@@ -22,13 +10,14 @@ services:
     - "143:143"
     - "587:587"
     - "993:993"
+    - "4190:4190"
     depends_on:
     - ldap
     volumes:
     - maildata:/var/mail
     - mailstate:/var/mail-state
     - ./config/:/tmp/docker-mailserver/
-    - ./config/letsencrypt/etc:/etc/letsencrypt
+    - /srv/claritae.net/frontend/proxy/certs/mail.claritae.net:/etc/letsencrypt/live/mail.claritae.net
     environment:
     - DMS_DEBUG=${DMS_DEBUG}
     - ENABLE_CLAMAV=${ENABLE_CLAMAV}
@@ -37,7 +26,7 @@ services:
     - ENABLE_FAIL2BAN=${ENABLE_FAIL2BAN}
     - ENABLE_MANAGESIEVE=${ENABLE_MANAGESIEVE}
     - OVERRIDE_HOSTNAME=${OVERRIDE_HOSTNAME}
-    - POSTMASTER_ADDRESS=${POSTMASTER_ADDRESS}
+    - POSTMASTER_ADDRESS=postmaster@${DOMAINNAME}
     - POSTSCREEN_ACTION=${POSTSCREEN_ACTION}
     - SMTP_ONLY=${SMTP_ONLY}
     - SSL_TYPE=${SSL_TYPE}
@@ -55,12 +44,13 @@ services:
     - ENABLE_LDAP=${ENABLE_LDAP}
     - LDAP_START_TLS=${LDAP_START_TLS}
     - LDAP_SERVER_HOST=${LDAP_SERVER_HOST}
-    - LDAP_SEARCH_BASE=${LDAP_SEARCH_BASE}
-    - LDAP_BIND_DN=${LDAP_BIND_DN}
-    - LDAP_BIND_PW=${LDAP_BIND_PW}
+    - LDAP_SEARCH_BASE=ou=people,dc=${DOMAINLABEL},dc=${DOMAINTLD}
+    - LDAP_BIND_DN=cn=admin,dc=${DOMAINLABEL},dc=${DOMAINTLD}
+    - LDAP_BIND_PW=${LDAP_ADMIN_PASSWORD}
     - LDAP_QUERY_FILTER_USER=${LDAP_QUERY_FILTER_USER}
     - LDAP_QUERY_FILTER_GROUP=${LDAP_QUERY_FILTER_GROUP}
     - LDAP_QUERY_FILTER_ALIAS=${LDAP_QUERY_FILTER_ALIAS}
+    - LDAP_QUERY_FILTER_DOMAIN=${LDAP_QUERY_FILTER_DOMAIN}
     - DOVECOT_TLS=${DOVECOT_TLS}
     - DOVECOT_USER_FILTER=${DOVECOT_USER_FILTER}
     - DOVECOT_PASS_FILTER=${DOVECOT_PASS_FILTER}
@@ -71,11 +61,11 @@ services:
     - ENABLE_SASLAUTHD=${ENABLE_SASLAUTHD}
     - SASLAUTHD_MECHANISMS=${SASLAUTHD_MECHANISMS}
     - SASLAUTHD_MECH_OPTIONS=${SASLAUTHD_MECH_OPTIONS}
-    - SASLAUTHD_LDAP_SERVER=${SASLAUTHD_LDAP_SERVER}
+    - SASLAUTHD_LDAP_SERVER=${LDAP_SERVER_HOST}
     - SASLAUTHD_LDAP_SSL=${SASLAUTHD_LDAP_SSL}
-    - SASLAUTHD_LDAP_BIND_DN=${SASLAUTHD_LDAP_BIND_DN}
-    - SASLAUTHD_LDAP_PASSWORD=${SASLAUTHD_LDAP_PASSWORD}
-    - SASLAUTHD_LDAP_SEARCH_BASE=${SASLAUTHD_LDAP_SEARCH_BASE}
+    - SASLAUTHD_LDAP_BIND_DN=cn=admin,dc=${DOMAINLABEL},dc=${DOMAINTLD}
+    - SASLAUTHD_LDAP_PASSWORD=${LDAP_ADMIN_PASSWORD}
+    - SASLAUTHD_LDAP_SEARCH_BASE=dc=${DOMAINLABEL},dc=${DOMAINTLD}
     - SASLAUTHD_LDAP_FILTER=${SASLAUTHD_LDAP_FILTER}
     - SASL_PASSWD=${SASL_PASSWD}
     cap_add:
@@ -83,9 +73,27 @@ services:
     - SYS_PTRACE
     restart: always 
 
+  autodiscover:
+    image: jsmitsnl/docker-email-autodiscover:latest
+    hostname: autodiscover
+    domainname: ${DOMAINNAME}
+    container_name: autodiscover
+    restart: always
+#    links:
+#    - nginx_proxy
+    environment:
+    - COMPANY_NAME=${LDAP_ORGANISATION}
+    - SUPPORT_URL=https://support.${DOMAINNAME}
+    - DOMAIN=${DOMAINNAME}
+    - IMAP_HOST=mail.${DOMAINNAME}
+    - SMTP_HOST=mail.${DOMAINNAME}
+    - VIRTUAL_HOST=autoconfig.${DOMAINNAME},autodiscover.${DOMAINNAME}
+    - LETSENCRYPT_HOST=autoconfig.${DOMAINNAME},autodiscover.${DOMAINNAME}
+    - LETSENCRYPT_EMAIL=support@${DOMAINNAME}
+
   ldap:
     image: webbasedsol/openldap
-    hostname: "ldap"
+    hostname: ldap
     container_name: ldap
     environment:
       LDAP_LOG_LEVEL: ${LDAP_LOG_LEVEL}
@@ -95,8 +103,8 @@ services:
       LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD}
       LDAP_CONFIG_PASSWORD: ${LDAP_CONFIG_PASSWORD}
       LDAP_READONLY_USER: ${LDAP_READONLY_USER}
-      LDAP_READONLY_USER_USERNAME: ${LDAP_READONLY_USER_USERNAME}
-      LDAP_READONLY_USER_PASSWORD: ${LDAP_READONLY_USER_PASSWORD}
+      #LDAP_READONLY_USER_USERNAME: ${LDAP_READONLY_USER_USERNAME}
+      #LDAP_READONLY_USER_PASSWORD: ${LDAP_READONLY_USER_PASSWORD}
       LDAP_BACKEND: ${LDAP_BACKEND}
       LDAP_TLS: ${LDAP_TLS}
       LDAP_TLS_CRT_FILENAME: ${LDAP_TLS_CRT_FILENAME}
@@ -107,10 +115,9 @@ services:
       LDAP_TLS_PROTOCOL_MIN: ${LDAP_TLS_PROTOCOL_MIN}
       LDAP_TLS_VERIFY_CLIENT: ${LDAP_TLS_VERIFY_CLIENT}
       LDAP_REPLICATION: ${LDAP_REPLICATION}
-      LDAP_REPLICATION_CONFIG_SYNCPROV: ${LDAP_REPLICATION_CONFIG_SYNCPROV}
-      LDAP_REPLICATION_DB_SYNCPROV: ${LDAP_REPLICATION_DB_SYNCPROV}
-      LDAP_REPLICATION_HOSTS: ${LDAP_REPLICATION_HOSTS}
-      LDAP_REMOVE_CONFIG_AFTER_SETUP: ${LDAP_REMOVE_CONFIG_AFTER_SETUP}
+    #  LDAP_REPLICATION_CONFIG_SYNCPROV: ${LDAP_REPLICATION_CONFIG_SYNCPROV}
+    #  LDAP_REPLICATION_HOSTS: ${LDAP_REPLICATION_HOSTS}
+    #  LDAP_REMOVE_CONFIG_AFTER_SETUP: ${LDAP_REMOVE_CONFIG_AFTER_SETUP}
       LDAP_SSL_HELPER_PREFIX: ${LDAP_SSL_HELPER_PREFIX}
     tty: true
     stdin_open: true
@@ -119,20 +126,20 @@ services:
       - /etc/ldap/slapd.d
       - /container/service/slapd/assets/certs/
     #ports:
-            #      - "389:389"
-            #      - "636:636"
+            #      - 389:389"
+            #      - 636:636"
 
       #  elk:
       #    build: elk
       #    ports:
-      #      - "5601:5601"
-      #      - "9200:9200"
-      #      - "5044:5044"
-      #      - "5000:5000"
+      #      - 5601:5601"
+      #      - 9200:9200"
+      #      - 5044:5044"
+      #      - 5000:5000"
       #    restart: always
 
   webmail:
-    image: webbasedsol/rainloop:0.2.0
+    image: webbasedsol/rainloop:latest
     mem_limit: 256m
     links:
       - mail:mail.${DOMAINNAME}
@@ -147,46 +154,46 @@ services:
       - VIRTUAL_HOST=mail.${DOMAINNAME}
       - VIRTUAL_PROTO=http
       - LETSENCRYPT_HOST=mail.${DOMAINNAME}
-      - LETSENCRYPT_EMAI=${WEBMASTER_EMAIL}
+      - LETSENCRYPT_EMAIL=webmaster@${DOMAINNAME}
 
   phpldapadmin:
     image: webbasedsol/phpldapadmin:latest
     #image: webbasedsol/phpldapadmin:0.1.0
     #container_name: phpldapadmin
     environment:
-      #      PHPLDAPADMIN_LDAP_HOSTS: "ldap"
-      #      PHPLDAPADMIN_HTTPS: "false"
+      #      PHPLDAPADMIN_LDAP_HOSTS: ldap"
+      #      PHPLDAPADMIN_HTTPS: false"
       LDAP_SERVER_HOST: ldap
       VIRTUAL_HOST: ldap.${DOMAINNAME}
       VIRTUAL_PROTO: http
       LETSENCRYPT_HOST: ldap.${DOMAINNAME}
-      LETSENCRYPT_EMAIL: ${WEBMASTER_EMAIL}
+      LETSENCRYPT_EMAIL: webmaster@${DOMAINNAME}
     #ports:
-            #      - "8080:80"
+            #      - 8080:80"
     depends_on:
       - ldap
 
-  lssp:
-    image: dtwardow/ldap-self-service-password
-    #container_name: ldap
-    hostname: lssp
-    #ports:
-            # - "8000:80"
-    links: 
-      - ldap:ldap-host
-      #  - mail:mail
-    environment:
-      #LDAP Self-Service-Password variables
-      LSSP_ATTR_LOGIN: uniqueIdentifier
-      LSSP_ATTR_FN: cn
-      LSSP_ATTR_MAIL: mail
-      LSSP_ATTR_ACTION: change
-      #ldap-Server variables 
-      LDAP_BASE: dc=example,dc=org
-      LDAP_HOST: ldap-host
-      LDAP_PORT: 389 #Default
-      LDAP_USER: cn=admin,dc=example,dc=org
-      LDAP_PASS: admin
+#  lssp:
+#    image: dtwardow/ldap-self-service-password
+#    #container_name: ldap
+#    hostname: lssp
+#    #ports:
+#            # - 8000:80"
+#    links: 
+#      - ldap:ldap-host
+#      #  - mail:mail
+#    environment:
+#      #LDAP Self-Service-Password variables
+#      LSSP_ATTR_LOGIN: uniqueIdentifier
+#      LSSP_ATTR_FN: cn
+#      LSSP_ATTR_MAIL: mail
+#      LSSP_ATTR_ACTION: change
+#      #ldap-Server variables 
+#      LDAP_BASE: dc=example,dc=org
+#      LDAP_HOST: ldap-host
+#      LDAP_PORT: 389 #Default
+#      LDAP_USER: cn=admin,dc=example,dc=org
+#      LDAP_PASS: admin
 
   ldap-backup:
     image: osixia/openldap-backup:1.1.11
@@ -217,9 +224,9 @@ services:
     #    image: osixia/backup-manager
     #    environment:
     #      - BACKUP_MANAGER_TARBALL_DIRECTORIES=/data/backup/ldap /data/backup/mail-data /data/backup/mail-state
-    #      - BACKUP_MANAGER_CRON_EXP="0/5 * * * *"
+    #      - BACKUP_MANAGER_CRON_EXP=0/5 * * * *"
     #      - BACKUP_MANAGER_UPLOAD_METHOD=s3
-    #      - BM_UPLOAD_S3_DESTINATION="wbs.example.org"
+    #      - BM_UPLOAD_S3_DESTINATION=wbs.example.org"
     #      - BM_UPLOAD_S3_ACCESS_KEY=
     #      - BM_UPLOAD_S3_SECRET_KEY=
     #    volumes:
