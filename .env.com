@@ -4,13 +4,26 @@
 # -----------------------------------------------------------------------------------------------------------------------------
 
 HOSTNAME=mail
-DOMAINTLD={{ DOMAINTLD }}
-DOMAINLABEL={{ DOMAINLABEL }}
-DOMAINNAME{{ DOMAINNAME }}
+DOMAINTLD=com
+DOMAINLABEL=claritae
+DOMAINNAME=claritae.com
 CONTAINER_NAME=mail
 
-# ldap Organisation Name
-LDAP_ORGANISATION={{ LDAP_ORGANIZATION}}
+# ldap administrator password
+LDAP_ADMIN_PASSWORD=adm1nP
+
+# ldap config password
+LDAP_CONFIG_PASSWORD=c0nf1g
+
+# ldap READONLY USER: 
+LDAP_READONLY_USER=true
+
+# ldap READONLY USER NAME: 
+LDAP_READONLY_USER_USERNAME=readonly
+
+# ldap READONLY USER PASSWORD:
+LDAP_READONLY_USER_PASSWORD=Read0nly
+
 
 # empty => uses the `hostname` command to get the mail server's canonical hostname
 # => Specify a fully-qualified domainname to serve mail for.  This is used for many of the config features so if you can't set your hostname (e.g. you're in a container platform that doesn't let you) specify it in this environment variable.
@@ -18,16 +31,12 @@ OVERRIDE_HOSTNAME=
 
 # 0 => Debug disabled
 # 1 => Enables debug on startup
-DMS_DEBUG=1
+DMS_DEBUG=0
 
 # 0 => mail state in default directories
 # 1 => consolidate all states into a single directory (`/var/mail-state`) to allow persistence using docker volumes
-ONE_DIR=1
+ONE_DIR=0
 
-# empty => postmaster@domain.com
-# => Specify the postmaster address
-#POSTMASTER_ADDRESS=postmaster@claritae.net
-  
 # Set different options for mynetworks option (can be overwrite in postfix-main.cf)
 # empty => localhost only
 # host => Add docker host (ipv4 only)
@@ -37,7 +46,7 @@ PERMIT_DOCKER=
 # 1 => Enables POP3 service
 # empty => disables POP3
 ENABLE_POP3=
-ENABLE_CLAMAV=0
+ENABLE_CLAMAV=1
 
 # If you enable Fail2Ban, don't forget to add the following lines to your `docker-compose.yml`:
 #    cap_add:
@@ -130,17 +139,6 @@ LDAP_START_TLS=no
 # Specify the dns-name/ip-address where the ldap-server
 LDAP_SERVER_HOST=ldap
 
-# empty => ou=people,dc=domain,dc=com
-# => e.g. LDAP_SEARCH_BASE=dc=mydomain,dc=local
-#LDAP_SEARCH_BASE=ou=people,dc=claritae,dc=net 
-# empty => cn=admin,dc=domain,dc=com
-# => take a look at examples of SASL_LDAP_BIND_DN
-#LDAP_BIND_DN=cn=admin,dc=claritae,dc=net
-
-# empty** => admin
-# => Specify the password to bind against ldap
-LDAP_BIND_PW=adminP
-
 # e.g. `"(&(mail=%s)(mailEnabled=TRUE))"`
 # => Specify how ldap should be asked for users
 LDAP_QUERY_FILTER_USER=(&(mail=%s)(mailEnabled=TRUE))
@@ -200,9 +198,6 @@ SASLAUTHD_MECHANISMS=ldap
 # e.g. with SASLAUTHD_MECHANISMS rimap you need to specify the ip-address/servername of the imap server  ==> xxx.xxx.xxx.xxx
 SASLAUTHD_MECH_OPTIONS=
 
-# empty => localhost
-SASLAUTHD_LDAP_SERVER=ldap
-
 # empty or 0 => `ldap://` will be used
 # 1 => `ldaps://` will be used
 SASLAUTHD_LDAP_SSL=
@@ -211,19 +206,19 @@ SASLAUTHD_LDAP_SSL=
 # specify an object with priviliges to search the directory tree
 # e.g. active directory: SASLAUTHD_LDAP_BIND_DN=cn=Administrator,cn=Users,dc=mydomain,dc=net
 # e.g. openldap: SASLAUTHD_LDAP_BIND_DN=cn=admin,dc=mydomain,dc=net
-#SASLAUTHD_LDAP_BIND_DN=
+SASLAUTHD_LDAP_BIND_DN=
 
 # empty => anonymous bind
-#SASLAUTHD_LDAP_PASSWORD=
+SASLAUTHD_LDAP_PASSWORD=
 
 # empty => Reverting to SASLAUTHD_MECHANISMS pam
 # specify the search base
-#SASLAUTHD_LDAP_SEARCH_BASE=
+SASLAUTHD_LDAP_SEARCH_BASE=
 
 # empty => default filter `(&(uniqueIdentifier=%u)(mailEnabled=TRUE))`
 # e.g. for active directory: `(&(sAMAccountName=%U)(objectClass=person))`
 # e.g. for openldap: `(&(uid=%U)(objectClass=person))`
-SASLAUTHD_LDAP_FILTER=(&(uniqueIdentifier=%u)(mailEnabled=TRUE))
+SASLAUTHD_LDAP_FILTER=
 
 # empty => No sasl_passwd will be created
 # string => `/etc/postfix/sasl_passwd` will be created with the string as password
@@ -232,8 +227,10 @@ SASL_PASSWD=
 # -1 enable all debugging default 256 for stats log connections/operatins/results
 LDAP_LOG_LEVEL=-1
 
+# ldap Organisation Name
+LDAP_ORGANISATION=Claritae Ltd
 
-# Default is empt
+# Default is empty
 LDAP_BASE_DN=
 
 # ldap administrator password
@@ -289,6 +286,3 @@ LDAP_KEEP_EXISTING_CONFIG=false
 LDAP_REMOVE_CONFIG_AFTER_SETUP=true
 
 LDAP_SSL_HELPER_PREFIX=ldap
-
-# webmaster email for letsencrypt and other notification services
-#WEBMASTER_EMAIL=webmaster@claritae.net

@@ -17,7 +17,7 @@ services:
     - maildata:/var/mail
     - mailstate:/var/mail-state
     - ./config/:/tmp/docker-mailserver/
-    - /srv/${DOMAINNAME}/frontend/proxy/certs/mail.${DOMAINNAME}:/etc/letsencrypt/live/mail.${DOMAINNAME}
+    - /srv/claritae.net/frontend/proxy/certs/mail.claritae.net:/etc/letsencrypt/live/mail.claritae.net
     environment:
     - DMS_DEBUG=${DMS_DEBUG}
     - ENABLE_CLAMAV=${ENABLE_CLAMAV}
@@ -26,7 +26,7 @@ services:
     - ENABLE_FAIL2BAN=${ENABLE_FAIL2BAN}
     - ENABLE_MANAGESIEVE=${ENABLE_MANAGESIEVE}
     - OVERRIDE_HOSTNAME=${OVERRIDE_HOSTNAME}
-    - POSTMASTER_ADDRESS=admin@${DOMAINNAME}
+    - POSTMASTER_ADDRESS=${POSTMASTER_ADDRESS}
     - POSTSCREEN_ACTION=${POSTSCREEN_ACTION}
     - SMTP_ONLY=${SMTP_ONLY}
     - SSL_TYPE=${SSL_TYPE}
@@ -61,7 +61,7 @@ services:
     - ENABLE_SASLAUTHD=${ENABLE_SASLAUTHD}
     - SASLAUTHD_MECHANISMS=${SASLAUTHD_MECHANISMS}
     - SASLAUTHD_MECH_OPTIONS=${SASLAUTHD_MECH_OPTIONS}
-    - SASLAUTHD_LDAP_SERVER=${LDAP_SERVER_HOST}
+    - SASLAUTHD_LDAP_SERVER=${SASLAUTHD_LDAP_SERVER}
     - SASLAUTHD_LDAP_SSL=${SASLAUTHD_LDAP_SSL}
     - SASLAUTHD_LDAP_BIND_DN=cn=admin,dc=${DOMAINLABEL},dc=${DOMAINTLD}
     - SASLAUTHD_LDAP_PASSWORD=${LDAP_ADMIN_PASSWORD}
@@ -89,10 +89,10 @@ services:
     - SMTP_HOST=mail.${DOMAINNAME}
     - VIRTUAL_HOST=autoconfig.${DOMAINNAME},autodiscover.${DOMAINNAME}
     - LETSENCRYPT_HOST=autoconfig.${DOMAINNAME},autodiscover.${DOMAINNAME}
-    - LETSENCRYPT_EMAIL=admin@${DOMAINNAME}
+    - LETSENCRYPT_EMAIL=support@${DOMAINNAME}
 
   ldap:
-    image: webbasedsol/openldap:latest
+    image: webbasedsol/openldap
     hostname: ldap
     container_name: ldap
     environment:
@@ -154,7 +154,7 @@ services:
       - VIRTUAL_HOST=mail.${DOMAINNAME}
       - VIRTUAL_PROTO=http
       - LETSENCRYPT_HOST=mail.${DOMAINNAME}
-      - LETSENCRYPT_EMAIL=admin@${DOMAINNAME}
+      - LETSENCRYPT_EMAIL=${WEBMASTER_EMAIL}
 
   phpldapadmin:
     image: webbasedsol/phpldapadmin:latest
@@ -167,7 +167,7 @@ services:
       VIRTUAL_HOST: ldap.${DOMAINNAME}
       VIRTUAL_PROTO: http
       LETSENCRYPT_HOST: ldap.${DOMAINNAME}
-      LETSENCRYPT_EMAIL: admin@${DOMAINNAME}
+      LETSENCRYPT_EMAIL: ${WEBMASTER_EMAIL}
     #ports:
             #      - 8080:80"
     depends_on:
