@@ -18,8 +18,8 @@ cd -
 #Clone and build rainloop
 git clone https://github.com/ifolarin/docker-rainloop-1.git
 cd docker-rainloop-1/
-docker build -t webbasedsol/rainloop:0.3.0 .
-docker tag  webbasedsol/rainloop:0.3.0 webbasedsol/rainloop:latest
+docker build -t webbasedsol/rainloop:0.3.2 .
+docker tag  webbasedsol/rainloop:0.3.2 webbasedsol/rainloop:latest
 cd -
 
 #Clone and build s3-backup

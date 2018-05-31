@@ -155,6 +155,7 @@ services:
       - VIRTUAL_PROTO=http
       - LETSENCRYPT_HOST=mail.${DOMAINNAME}
       - LETSENCRYPT_EMAIL=admin@${DOMAINNAME}
+      - APACHE_SERVER_ADMIN=webmaster@${DOMAINNAME}
 
   phpldapadmin:
     image: webbasedsol/phpldapadmin:latest
