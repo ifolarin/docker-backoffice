@@ -10,7 +10,7 @@ cd -
 
 #Clone and build phpLDAPadmin
 git clone https://github.com/ifolarin/docker-phpLDAPadmin.git
-cd docker-phpLDAPadmin/example/extend-dinkel-phpldapadmin/
+cd docker-phpLDAPadmin/example/extend-osixia-phpLDAPadmin/
 docker build -t webbasedsol/phpldapadmin:0.2.0 . 
 docker tag  webbasedsol/phpldapadmin:0.2.0 webbasedsol/phpldapadmin:latest
 cd -
@@ -19,7 +19,7 @@ cd -
 git clone https://github.com/ifolarin/docker-webmail.git
 cd docker-webmail/
 docker build -t webbasedsol/webmail:0.4.0 .
-docker tag  webbasedsol/rainloop:0.4.0 webbasedsol/webmail:latest
+docker tag  webbasedsol/webmail:0.4.0 webbasedsol/webmail:latest
 cd -
 
 #Clone and build s3-backup
