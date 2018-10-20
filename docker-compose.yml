@@ -197,7 +197,7 @@ services:
 #      LDAP_PASS: admin
 
   ldap-backup:
-    image: osixia/openldap-backup:1.1.11
+    image: osixia/openldap-backup:1.2.2
     links:
       - ldap
     environment:
