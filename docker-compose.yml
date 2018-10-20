@@ -71,6 +71,7 @@ services:
     - VIRTUAL_PROTO=http
     - LETSENCRYPT_HOST=${HOSTNAME}.${DOMAINNAME} 
     - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    - LETSENCRYPT_TEST=${LETSENCRYPT_TEST}
     cap_add:
     - NET_ADMIN
     - SYS_PTRACE
@@ -93,6 +94,8 @@ services:
     - VIRTUAL_HOST=autoconfig.${DOMAINNAME},autodiscover.${DOMAINNAME}
     - LETSENCRYPT_HOST=autoconfig.${DOMAINNAME},autodiscover.${DOMAINNAME}
     - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    - LETSENCRYPT_TEST=${LETSENCRYPT_TEST}
+
 
   ldap:
     image: webbasedsol/openldap:latest
@@ -174,6 +177,7 @@ services:
       - VIRTUAL_PROTO=http
       - LETSENCRYPT_HOST=webmail.${DOMAINNAME}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - LETSENCRYPT_TEST=${LETSENCRYPT_TEST}
       - LOG_TO_STDOUT=true
 
   phpldapadmin:
@@ -188,6 +192,7 @@ services:
       VIRTUAL_PROTO: http
       LETSENCRYPT_HOST: ldap.${DOMAINNAME}
       LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      LETSENCRYPT_TEST=${LETSENCRYPT_TEST}
     #ports:
             #      - 8080:80"
     depends_on:
