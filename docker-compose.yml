@@ -166,7 +166,7 @@ services:
   webmail:
     image: webbasedsol/webmail:latest
     links:
-      - mail:mail.${DOMAINNAME}
+      - mail:${HOSTNAME}.${DOMAINNAME}
     depends_on:
       - mail
     #ports: 
