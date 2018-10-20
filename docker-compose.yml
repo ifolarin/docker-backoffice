@@ -173,7 +173,7 @@ services:
       - VIRTUAL_HOST=webmail.${DOMAINNAME}
       - VIRTUAL_PROTO=http
       - LETSENCRYPT_HOST=webmail.${DOMAINNAME}
-      - LETSENCRYPT_EMAIL=admin@${DOMAINNAME}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
       - LOG_TO_STDOUT=true
 
   phpldapadmin:
@@ -187,7 +187,7 @@ services:
       VIRTUAL_HOST: ldap.${DOMAINNAME}
       VIRTUAL_PROTO: http
       LETSENCRYPT_HOST: ldap.${DOMAINNAME}
-      LETSENCRYPT_EMAIL: admin@${DOMAINNAME}
+      LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     #ports:
             #      - 8080:80"
     depends_on:
