@@ -4,22 +4,22 @@
 #Clone and build openldap
 git clone https://github.com/ifolarin/docker-openldap.git
 cd docker-openldap/example/extend-osixia-openldap/
-docker build -t webbasedsol/openldap:0.3.5 .
-docker tag  webbasedsol/openldap:0.3.5 webbasedsol/openldap:latest
+docker build -t webbasedsol/openldap:0.4.0 .
+docker tag  webbasedsol/openldap:0.4.0 webbasedsol/openldap:latest
 cd -
 
 #Clone and build phpLDAPadmin
 git clone https://github.com/ifolarin/docker-phpLDAPadmin.git
 cd docker-phpLDAPadmin/example/extend-dinkel-phpldapadmin/
-docker build -t webbasedsol/phpldapadmin:0.1.3 . 
-docker tag  webbasedsol/phpldapadmin:0.1.3 webbasedsol/phpldapadmin:latest
+docker build -t webbasedsol/phpldapadmin:0.2.0 . 
+docker tag  webbasedsol/phpldapadmin:0.2.0 webbasedsol/phpldapadmin:latest
 cd -
 
 #Clone and build rainloop
-git clone https://github.com/ifolarin/docker-rainloop-1.git
-cd docker-rainloop-1/
-docker build -t webbasedsol/rainloop:0.3.2 .
-docker tag  webbasedsol/rainloop:0.3.2 webbasedsol/rainloop:latest
+git clone https://github.com/ifolarin/docker-webmail.git
+cd docker-webmail/
+docker build -t webbasedsol/webmail:0.4.0 .
+docker tag  webbasedsol/rainloop:0.4.0 webbasedsol/webmail:latest
 cd -
 
 #Clone and build s3-backup

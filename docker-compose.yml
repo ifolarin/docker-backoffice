@@ -17,14 +17,13 @@ services:
     - maildata:/var/mail
     - mailstate:/var/mail-state
     - ./config/:/tmp/docker-mailserver/
-    - /srv/${DOMAINNAME}/frontend/proxy/certs/mail.${DOMAINNAME}:/etc/letsencrypt/live/mail.${DOMAINNAME}
+    - /srv/${DOMAINNAME}/frontend/proxy/certs/${HOSTNAME}.${DOMAINNAME}:/etc/letsencrypt/live/${HOSTNAME}.${DOMAINNAME}
     environment:
     - DMS_DEBUG=${DMS_DEBUG}
     - ENABLE_CLAMAV=${ENABLE_CLAMAV}
     - ONE_DIR=${ONE_DIR}
     - ENABLE_POP3=${ENABLE_POP3}
-    - ENABLE_FAIL2BAN=${ENABLE_FAIL2BAN}
-    - ENABLE_MANAGESIEVE=${ENABLE_MANAGESIEVE}
+    - ENABLE_FAIL2BAN=${ENABLE_FAIL2BAN} - ENABLE_MANAGESIEVE=${ENABLE_MANAGESIEVE}
     - OVERRIDE_HOSTNAME=${OVERRIDE_HOSTNAME}
     - POSTMASTER_ADDRESS=admin@${DOMAINNAME}
     - POSTSCREEN_ACTION=${POSTSCREEN_ACTION}
@@ -68,6 +67,10 @@ services:
     - SASLAUTHD_LDAP_SEARCH_BASE=dc=${DOMAINLABEL},dc=${DOMAINTLD}
     - SASLAUTHD_LDAP_FILTER=${SASLAUTHD_LDAP_FILTER}
     - SASL_PASSWD=${SASL_PASSWD}
+    - VIRTUAL_HOST=${HOSTNAME}.${DOMAINNAME},imap.${DOMAINNAME},smtp.${DOMAINNAME}
+    - VIRTUAL_PROTO=http
+    - LETSENCRYPT_HOST=${HOSTNAME}.${DOMAINNAME} 
+    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     cap_add:
     - NET_ADMIN
     - SYS_PTRACE
@@ -85,11 +88,11 @@ services:
     - COMPANY_NAME=${LDAP_ORGANISATION}
     - SUPPORT_URL=https://support.${DOMAINNAME}
     - DOMAIN=${DOMAINNAME}
-    - IMAP_HOST=mail.${DOMAINNAME}
-    - SMTP_HOST=mail.${DOMAINNAME}
+    - IMAP_HOST=imap.${DOMAINNAME}
+    - SMTP_HOST=smtp.${DOMAINNAME}
     - VIRTUAL_HOST=autoconfig.${DOMAINNAME},autodiscover.${DOMAINNAME}
     - LETSENCRYPT_HOST=autoconfig.${DOMAINNAME},autodiscover.${DOMAINNAME}
-    - LETSENCRYPT_EMAIL=admin@${DOMAINNAME}
+    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
 
   ldap:
     image: webbasedsol/openldap:latest
@@ -138,9 +141,27 @@ services:
       #      - 5000:5000"
       #    restart: always
 
+      #  webmail:
+      #    image: webbasedsol/rainloop:latest
+      #    mem_limit: 256m
+      #    links:
+      #      - mail:mail.${DOMAINNAME}
+      #    depends_on:
+      #      - mail
+      #    #ports: 
+      #            #  - 8090:80
+      #    environment: 
+      #      - APACHE_SERVER_NAME=webmail.${DOMAINNAME}
+      #      - PHP_MAX_POST_SIZE=105M
+      #      - PHP_MAX_UPLOAD_SIZE=100M
+      #      - VIRTUAL_HOST=mail.${DOMAINNAME}
+      #      - VIRTUAL_PROTO=http
+      #      - LETSENCRYPT_HOST=mail.${DOMAINNAME}
+      #      - LETSENCRYPT_EMAIL=admin@${DOMAINNAME}
+      #      - APACHE_SERVER_ADMIN=webmaster@${DOMAINNAME}
+
   webmail:
-    image: webbasedsol/rainloop:latest
-    mem_limit: 256m
+    image: webbasedsol/webmail:latest
     links:
       - mail:mail.${DOMAINNAME}
     depends_on:
@@ -148,14 +169,12 @@ services:
     #ports: 
             #  - 8090:80
     environment: 
-      - APACHE_SERVER_NAME=webmail.${DOMAINNAME}
-      - PHP_MAX_POST_SIZE=105M
-      - PHP_MAX_UPLOAD_SIZE=100M
-      - VIRTUAL_HOST=mail.${DOMAINNAME}
+      - UPLOAD_MAX_SIZE = 105M
+      - VIRTUAL_HOST=webmail.${DOMAINNAME}
       - VIRTUAL_PROTO=http
-      - LETSENCRYPT_HOST=mail.${DOMAINNAME}
+      - LETSENCRYPT_HOST=webmail.${DOMAINNAME}
       - LETSENCRYPT_EMAIL=admin@${DOMAINNAME}
-      - APACHE_SERVER_ADMIN=webmaster@${DOMAINNAME}
+      - LOG_TO_STDOUT=true
 
   phpldapadmin:
     image: webbasedsol/phpldapadmin:latest
